@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Large 3D model files (stored locally, not in git)
+public/models/*.glb
+public/models/*.gltf
