@@ -1,14 +1,81 @@
+---
+import '../styles/tailwind.css';
+import Navbar from '../components/common/Navbar.astro';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+}
+
+const { 
+	title = 'StreetCap - Diseña tu propia gorra en 3D',
+	description = 'Diseña y personaliza tu gorra 3D en tiempo real. Elige colores, modelos y comparte tus diseños con la comunidad.',
+	image = 'https://streetcap.com/og-image.jpg'
+} = Astro.props as Props;
+
+const site = Astro.site || new URL('https://streetcap.com');
+const canonicalURL = new URL(Astro.url.pathname, site);
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		
+		<!-- Primary Meta Tags -->
+		<title>{title}</title>
+		<meta name="title" content={title} />
+		<meta name="description" content={description} />
+		<meta name="keywords" content="gorra, diseño 3D, personalización, moda, streetwear" />
+		<meta name="author" content="StreetCap" />
+		<meta name="language" content="Spanish" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={image} />
+		<meta property="og:site_name" content="StreetCap" />
+		<meta property="og:locale" content="es_ES" />
+		
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={canonicalURL} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
+		<meta property="twitter:image" content={image} />
+		
+		<!-- Canonical -->
+		<link rel="canonical" href={canonicalURL} />
+		
+		<!-- Preconnect -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		
+		<!-- Favicon -->
+		<link rel="icon" href="/favicon.svg" />
+		<link rel="apple-touch-icon" href="/favicon.svg" />
+		
+		<!-- Theme Color -->
+		<meta name="theme-color" content="#06b6d4" />
+		<meta name="msapplication-TileColor" content="#06b6d4" />
 	</head>
-	<body>
-		<slot />
+	<body class="bg-black text-white">
+		<Navbar />
+		<main>
+			<slot />
+		</main>
+		
+		<!-- Footer comum a todas as páginas -->
+		<footer class="bg-black border-t border-gray-800 py-8 mt-20">
+			<div class="max-w-7xl mx-auto px-6 text-center text-gray-500 text-sm">
+				<p>&copy; 2025 StreetCap. Todos los derechos reservados.</p>
+			</div>
+		</footer>
 	</body>
 </html>
 

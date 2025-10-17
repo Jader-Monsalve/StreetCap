@@ -1,0 +1,237 @@
+---
+interface Props {
+  capType?: string;
+}
+
+const { capType = 'baseball' } = Astro.props as Props;
+
+declare global {
+  interface Window {
+    changeCapColor: (color: string) => void;
+    changeVisorColor: (color: string) => void;
+    changeBandColor: (color: string) => void;
+    changeButtonColor: (color: string) => void;
+    toggleAutoRotate: () => void;
+    resetView: () => void;
+    downloadDesign: () => void;
+    shareDesign: () => void;
+  }
+}
+---
+
+<div id={`cap-viewer-${capType}`} class="w-full h-full"></div>
+
+<script>
+  async function initCapViewers() {
+    const { default: THREE } = await import('three') as any;
+
+    const containers = document.querySelectorAll('[id^="cap-viewer-"]');
+
+    containers.forEach((container: any) => {
+      if (!container) return;
+
+      const capType = container.id.replace('cap-viewer-', '');
+
+      // Scene setup
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a0a0a);
+
+      const width = container.clientWidth || 400;
+      const height = container.clientHeight || 400;
+
+      const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+      camera.position.z = 3;
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(renderer.domElement);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(5, 5, 5);
+      scene.add(directionalLight);
+
+      const pointLight = new THREE.PointLight(0x00d4ff, 0.5);
+      pointLight.position.set(-5, 3, 5);
+      scene.add(pointLight);
+
+      // Cap Group
+      const capGroup = new THREE.Group();
+      let crownMaterial: any, visorMaterial: any, bandMaterial: any, buttonMaterial: any;
+
+      // Clear group properly
+      function clearGroup(group: any) {
+        while (group.children.length > 0) {
+          group.remove(group.children[0]);
+        }
+      }
+
+      // Create Baseball Cap
+      function createBaseballCap() {
+        clearGroup(capGroup);
+
+        const crown = new THREE.Mesh(
+          new THREE.ConeGeometry(1, 0.6, 32),
+          new THREE.MeshPhongMaterial({ color: 0x06b6d4, shininess: 100 })
+        );
+        crown.position.y = 0.3;
+        crownMaterial = crown.material;
+        capGroup.add(crown);
+
+        const visor = new THREE.Mesh(
+          new THREE.BoxGeometry(2, 0.2, 0.8),
+          new THREE.MeshPhongMaterial({ color: 0x0891b2, shininess: 50 })
+        );
+        visor.position.set(0, -0.2, 0.5);
+        visorMaterial = visor.material;
+        capGroup.add(visor);
+
+        const band = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.1, 1.1, 0.4, 32),
+          new THREE.MeshPhongMaterial({ color: 0x0ea5e9, shininess: 80 })
+        );
+        band.position.set(0, -0.1, -0.5);
+        bandMaterial = band.material;
+        capGroup.add(band);
+
+        const button = new THREE.Mesh(
+          new THREE.SphereGeometry(0.15, 16, 16),
+          new THREE.MeshPhongMaterial({ color: 0xfbbf24, shininess: 120 })
+        );
+        button.position.y = 0.7;
+        buttonMaterial = button.material;
+        capGroup.add(button);
+      }
+
+      createBaseballCap();
+      scene.add(capGroup);
+
+      // Mouse controls
+      let isDragging = false;
+      let previousMousePosition = { x: 0, y: 0 };
+
+      renderer.domElement.addEventListener('mousedown', (e: any) => {
+        isDragging = true;
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+      });
+
+      renderer.domElement.addEventListener('mousemove', (e: any) => {
+        if (isDragging) {
+          const deltaX = e.clientX - previousMousePosition.x;
+          const deltaY = e.clientY - previousMousePosition.y;
+          capGroup.rotation.y += deltaX * 0.01;
+          capGroup.rotation.x += deltaY * 0.01;
+          previousMousePosition = { x: e.clientX, y: e.clientY };
+        }
+      });
+
+      renderer.domElement.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // Touch controls
+      renderer.domElement.addEventListener('touchstart', (e: any) => {
+        isDragging = true;
+        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      });
+
+      renderer.domElement.addEventListener('touchmove', (e: any) => {
+        if (isDragging) {
+          const deltaX = e.touches[0].clientX - previousMousePosition.x;
+          const deltaY = e.touches[0].clientY - previousMousePosition.y;
+          capGroup.rotation.y += deltaX * 0.01;
+          capGroup.rotation.x += deltaY * 0.01;
+          previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+      });
+
+      renderer.domElement.addEventListener('touchend', () => {
+        isDragging = false;
+      });
+
+      // Auto rotation
+      let autoRotate = true;
+
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+        if (autoRotate && !isDragging) {
+          capGroup.rotation.y += 0.005;
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // Handle resize
+      window.addEventListener('resize', () => {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      });
+
+      // Global functions
+      window.changeCapColor = (color: string) => {
+        if (crownMaterial) crownMaterial.color.setStyle(color);
+      };
+
+      window.changeVisorColor = (color: string) => {
+        if (visorMaterial) visorMaterial.color.setStyle(color);
+      };
+
+      window.changeBandColor = (color: string) => {
+        if (bandMaterial) bandMaterial.color.setStyle(color);
+      };
+
+      window.changeButtonColor = (color: string) => {
+        if (buttonMaterial) buttonMaterial.color.setStyle(color);
+      };
+
+      window.toggleAutoRotate = () => {
+        autoRotate = !autoRotate;
+      };
+
+      window.resetView = () => {
+        capGroup.rotation.set(0, 0, 0);
+      };
+
+      window.downloadDesign = () => {
+        const link = document.createElement('a');
+        link.href = renderer.domElement.toDataURL('image/png');
+        link.download = 'mi-gorra-streetcap.png';
+        link.click();
+      };
+
+      window.shareDesign = () => {
+        if (navigator.share) {
+          navigator.share({
+            title: 'Mi gorra StreetCap',
+            text: '¡Diseñé esta gorra en StreetCap! 🧢',
+            url: window.location.href,
+          });
+        } else {
+          alert('Comparte este enlace: ' + window.location.href);
+        }
+      };
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCapViewers);
+  } else {
+    initCapViewers();
+  }
+</script>
+
+<style>
+  div {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>

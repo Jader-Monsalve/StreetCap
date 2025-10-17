@@ -1,0 +1,181 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CapViewer3D from '../components/CapViewer3D.astro';
+
+const capModels = [
+  { id: 'baseball', name: 'Gorra Beisbolera', type: 'baseball' },
+  { id: 'snapback', name: 'Gorra Snapback', type: 'snapback' },
+  { id: 'mesh', name: 'Gorra de Malla', type: 'mesh' },
+  { id: 'flat', name: 'Gorra Plana', type: 'flat' },
+];
+
+const colorOptions = [
+  { name: 'Blanco', value: '#FFFFFF' },
+  { name: 'Negro', value: '#000000' },
+  { name: 'Rojo', value: '#EF4444' },
+  { name: 'Azul', value: '#3B82F6' },
+  { name: 'Verde', value: '#10B981' },
+  { name: 'Amarillo', value: '#FBBF24' },
+  { name: 'Púrpura', value: '#A855F7' },
+  { name: 'Rosa', value: '#EC4899' },
+  { name: 'Naranja', value: '#F97316' },
+  { name: 'Cian', value: '#06B6D4' },
+];
+---
+
+<Layout>
+  <section class="pt-32 pb-20 bg-black min-h-screen">
+    <div class="max-w-7xl mx-auto px-6">
+      {/* Header */}
+      <div class="mb-12 space-y-4">
+        <h1 class="text-6xl font-black text-white">
+          Diseñador 3D
+        </h1>
+        <p class="text-gray-400 text-lg">
+          Personaliza tu gorra en tiempo real. Selecciona modelo, colores y crea tu diseño único.
+        </p>
+      </div>
+
+      {/* Main Designer Layout */}
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Sidebar - Controls */}
+        <div class="lg:col-span-1 space-y-6 max-h-[80vh] overflow-y-auto">
+          {/* Model Selection */}
+          <div class="bg-gradient-to-br from-gray-900/50 to-black border border-cyan-500/20 rounded-2xl p-6 space-y-4">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+              🎯 Selecciona Modelo
+            </h3>
+            <div class="space-y-2">
+              {capModels.map((model) => (
+                <button
+                  class="w-full px-4 py-3 text-left rounded-lg border border-cyan-500/30 bg-gray-800/30 hover:bg-cyan-500/10 hover:border-cyan-500 transition text-white font-medium"
+                  onclick={`document.getElementById('model-display').setAttribute('data-cap', '${model.type}')`}
+                >
+                  {model.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Color Selection */}
+          <div class="bg-gradient-to-br from-gray-900/50 to-black border border-cyan-500/20 rounded-2xl p-6 space-y-4">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+              🎨 Colores
+            </h3>
+
+            <div class="space-y-3">
+              <label class="text-sm font-medium text-gray-300">Parte Frontal</label>
+              <div class="grid grid-cols-5 gap-2">
+                {colorOptions.map((color) => (
+                  <button
+                    class="w-full aspect-square rounded-lg border-2 border-gray-700 hover:border-cyan-400 transition cursor-pointer"
+                    style={{ backgroundColor: color.value }}
+                    onclick={`changeCapColor('${color.value}')`}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <label class="text-sm font-medium text-gray-300">Visera</label>
+              <div class="grid grid-cols-5 gap-2">
+                {colorOptions.map((color) => (
+                  <button
+                    class="w-full aspect-square rounded-lg border-2 border-gray-700 hover:border-cyan-400 transition cursor-pointer"
+                    style={{ backgroundColor: color.value }}
+                    onclick={`changeVisorColor('${color.value}')`}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <label class="text-sm font-medium text-gray-300">Banda/Malla</label>
+              <div class="grid grid-cols-5 gap-2">
+                {colorOptions.map((color) => (
+                  <button
+                    class="w-full aspect-square rounded-lg border-2 border-gray-700 hover:border-cyan-400 transition cursor-pointer"
+                    style={{ backgroundColor: color.value }}
+                    onclick={`changeBandColor('${color.value}')`}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <label class="text-sm font-medium text-gray-300">Botón/Detalles</label>
+              <div class="grid grid-cols-5 gap-2">
+                {colorOptions.map((color) => (
+                  <button
+                    class="w-full aspect-square rounded-lg border-2 border-gray-700 hover:border-cyan-400 transition cursor-pointer"
+                    style={{ backgroundColor: color.value }}
+                    onclick={`changeButtonColor('${color.value}')`}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Text & Logo */}
+          <div class="bg-gradient-to-br from-gray-900/50 to-black border border-cyan-500/20 rounded-2xl p-6 space-y-4">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+              ✏️ Personalización
+            </h3>
+
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-300">Tu nombre</label>
+              <input
+                type="text"
+                placeholder="Escribe aquí..."
+                class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none transition"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-300">Emojis/Logos</label>
+              <div class="flex gap-2 flex-wrap">
+                {['🎵', '⚽', '🌟', '❤️', '🔥', '👽', '💀', '🎨', '🚀', '🎮'].map((emoji) => (
+                  <button
+                    class="w-10 h-10 rounded-lg bg-gray-800 hover:bg-cyan-500/20 border border-gray-700 hover:border-cyan-500 transition flex items-center justify-center text-lg cursor-pointer"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div class="flex gap-2">
+            <button class="flex-1 px-4 py-3 bg-cyan-500/20 border border-cyan-500 text-cyan-400 font-bold rounded-lg hover:bg-cyan-500/30 transition" onclick="toggleAutoRotate()">
+              ↻ Rotar
+            </button>
+            <button class="flex-1 px-4 py-3 bg-gray-700/50 border border-gray-600 text-gray-300 font-bold rounded-lg hover:bg-gray-600 transition" onclick="resetView()">
+              🔄 Reset
+            </button>
+          </div>
+
+          <div class="flex gap-2">
+            <button class="flex-1 px-4 py-3 bg-green-600/80 hover:bg-green-600 text-white font-bold rounded-lg transition" onclick="downloadDesign()">
+              ⬇️ Descargar
+            </button>
+            <button class="flex-1 px-4 py-3 bg-blue-600/80 hover:bg-blue-600 text-white font-bold rounded-lg transition" onclick="shareDesign()">
+              📤 Compartir
+            </button>
+          </div>
+        </div>
+
+        {/* Center - 3D Viewer */}
+        <div class="lg:col-span-2 flex items-center justify-center">
+          <div id="model-display" data-cap="baseball" class="w-full h-[600px] bg-gradient-to-br from-gray-900/50 to-black border border-cyan-500/20 rounded-2xl overflow-hidden">
+            <CapViewer3D capType="baseball" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
