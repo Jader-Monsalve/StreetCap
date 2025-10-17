@@ -142,10 +142,11 @@ export default function CapViewer3D({ capType = 'baseball' }: CapViewer3DProps) 
         // ===== TRY LOADING GLB MODELS =====
         let capModel: any = null;
         const glbUrls = [
-          '/models/baseball_cap.glb',
-          'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Horse.glb',
-          'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Parrot.glb',
-          'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/models/gltf/Soldier.glb',
+          // Modelos realistas y gratuitos de Three.js CDN
+          'https://cdn.jsdelivr.net/npm/three@r128/examples/models/gltf/Horse.glb',
+          'https://cdn.jsdelivr.net/npm/three@r128/examples/models/gltf/Parrot.glb',
+          'https://cdn.jsdelivr.net/npm/three@r128/examples/models/gltf/Soldier.glb',
+          '/models/baseball_cap.glb', // Modelo local si está disponible
         ];
 
         const loader = new GLTFLoader();
